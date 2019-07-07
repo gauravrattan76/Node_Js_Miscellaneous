@@ -1,0 +1,21 @@
+var http = require('http');
+var fs = require('fs');
+http.createServer(function (req, res) {
+    console.log("request url" + req.url);
+    if (req.url === '/home' || req.url === '/') {
+        res.writeHead(200, { 'Content-Type': 'text/html' });
+        fs.createReadStream('index.html').pipe(res);
+    }
+    else if (req.url === '/api') {
+        res.writeHead(200, { 'Content-Type': 'application/json' });
+        var obj = {
+            "name": "Gaurav",
+            "age": 27,
+            "gender": "Male"
+        }
+        res.end(JSON.stringify(obj));
+    }
+
+}).listen(8080);
+
+console.log("This is a proof tony stark has a heart");
