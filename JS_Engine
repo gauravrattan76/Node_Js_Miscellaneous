@@ -1,0 +1,180 @@
+Javascript_Working-
+______________________________________________________________________________
+
+In JS-speak, these terms are synonymous for the fact that the Javascript engine, whether that be the browser engine like Google Chrome’s V8 or code interpreted on your local machine with NodeJS, has only one call stack.
+
+____________________________________________________________________________________
+
+
+Javascript Engine-
+
+
+heap
+stack fuctions
+event loop
+callback quesue
+
+Javascript Engine Parts-
+__________________________________________________________________________________________
+
+The heap: This is the physical memory space that is used to store variables, functions, and objects. Since everything in Javascript is an object, anything that is allocated in memory using the new keyword is stored in the heap. Javascript also has a garbage collector that frees the allocated memory so that it does not have to be freed manually like in C/C++.
+
+______________________________
+
+The stack: This is where function and API calls (Web API in browsers and C/C++ API on local machines via NodeJs) are stored. This part behaves just like a typical stack data structure with a last-in-first-out structure (LIFO). Function calls are added to the top of the stack and popped off from the top after execution completes.
+
+______________________________
+
+API’s (Web or C/C++): This is where the actual functionality for built-in functions like setTimeout() and fetch() are located. In a way, functions like setTimeout() can be thought of as activating the API function, and then being popped off the call stack right away while the API function continues to run in the background (in this case, a timer is run in the background).
+
+
+______________________________________________________________________________
+
+
+Callback queue: Some functions like setTimeout() that contact the API’s require a callback function to be provided to it so that it knows what to do after the API function has been run. In this case, the callback functions are placed in the callback queue. The queue itself behaves just like a queue data structure as a first-in-first-out structure (FIFO).
+
+
+______________________________________________________________________________
+
+Event loop: The event loop is an algorithm that constantly checks the call stack to see if there are any function calls that need to be run. When the call stack is empty, the first entry in the callback queue is pushed onto the call stack to complete execution. This happens until the queue is empty.
+
+_______________________________________________________________________________
+
+Single-Threaded vs. Multi-Threaded
+So, we have established that Javascript is a single-threaded language and that it has only one call stack, but what does this actually mean? In computer science, a thread is like an entity that is capable of running lines of code independently. So, being single-threaded is like saying that there is one single entity that is running lines of code. Being multi-threaded is like saying there are multiple entities capable of running lines of code at the same time.
+
+__________________________________________________________________________________________
+
+console.log("Hello");
+const takesALongTime = () => {
+  // Function that takes 1 hour to run
+takesALongTime();
+console.log("Bye");
+
+______________________________________________________________________________
+The single-threaded nature of Javascript would mean that this series of code would print Hello to the console, then take a whole hour before printing Bye to the console. There is no way around the middle function such that the second console log can run before the middle function finishes. In this case, the first console.log is pushed onto the call stack, executes, then it is popped off. The middle function is pushed to the call stack and any other functions that run inside of it are pushed and popped onto the call stack. Finally, the middle function is popped off an hour later and the last console.log is pushed, run, and popped from the call stack. Pretty inefficient, huh?
+
+__________________________________________________________________________________________
+
+Something that Javascript can do that is really cool is passing in functions as arguments to other functions. When a function is passed into another function without () it is called a callback function. So, for instance, if you had the following code:
+function functionOne(num) {
+  console.log(num);
+}
+function functionTwo(num, callback) {
+  callbackNum = 10;
+  callback(callbackNum);
+  console.log(num);
+}
+functionTwo(5, functionOne); //outputs 10, then 5 on a new line
+
+_____________________________________________________
+
+
+This creates a closure where the function functionOne has access to the scope of functionTwo. The function functionOne was passed to functionTwo as a callback, and thus, the callback function itself gets placed into the callback queue in the Javascript engine, which then pushes it onto the call stack when empty.
+
+______________________________________________________________________________
+
+console.log("Hello");
+const takesALongTime = () => {
+  // Function that takes 1 hour to run
+takesALongTime();
+console.log("Bye");
+
+______________________________________________________________________________
+You cannot inherently write an asynchronous Javascript function by itself. What you can do is use an asynchronous primitive like setTimeout() which will interact with the callback queue. So, how do we use setTimeout() to allow the Bye to be printed before takesALongTime() completes? We can do it like this:
+console.log("Hello");
+const takesALongTime = () => {
+  // Function that takes 1 hour to run
+setTimeout(takesALongTime, 2000);
+console.log("Bye");
+
+____________________________________________________________________________________
+
+Super Important steps-
+
+The console.log("Hello") is pushed onto the call stack and executed. It is then popped.
+
+The setTimeout(takesALongTime, 1000) is pushed onto the call stack. The setTimeout function interacts with the Web API or C/C++ API to start a 2-second timer.
+
+The work of the setTimeout function is complete, so it is popped off the call stack.
+
+The console.log("Bye") is pushed onto the call stack and executed. It is then popped.
+
+
+After two seconds, the timer is complete, and the takesALongTime callback is enqueued onto the callback queue.
+
+The event loop looks at the call stack and sees that it is empty, so it pushes the takesALongTime callback function onto the call stack for execution.
+
+After an hour, takesALongTime is complete and it is popped off the call stack.
+
+
+________________________________________________________________________________
+
+
+So when I said you cannot write asynchronous functions, I kind of lied, KIND OF. Javascript ES6 introduced a feature called promises that makes writing asynchronous Javascript easier. Promises are basically objects that may or may not resolve (essentially return) a value in the future, but which will notify the calling function via callbacks whether it is successful or not.
+Promises have three states: fulfilled, rejected, or pending, which are all straightforward in terms of definition. A full promise process consists of the following sequence:
+
+
+______________________________________________________________________________
+let promise = new Promise((resolve, reject) => {
+  // executor code
+});
+
+
+______________________________________________________________________________
+The promise object has internal properties:
+state — the current status of the promise which can be “fulfilled”, “rejected”, or “pending”. While the executor code is running, the state is “pending” and when the promise completes, the state can be either “fulfilled” or “rejected”.
+result — some arbitrary value.
+
+
+______________________________________________________________________________
+The arguments resolve and reject passed in are two internal functions of the Javascript engine that run depending on the final state of the promise.
+resolve runs when the promise is fulfilled and it sets the state of the promise to “fulfilled” and the result to some specified value.
+reject runs when the promise is rejected and it sets the state of the promise to “rejected” and the result to an error.
+So for example, the following code runs the executor function and upon success, sets the internal variables state to "fulfilled" and the result to "Success":
+let promise = new Promise((resolve, reject) => {
+  console.log("Hello");
+  resolve("Success");
+});
+
+____________________________________________________________________________
+
+let promise = new Promise((resolve, reject) => {
+  console.log("No hello");
+  reject("Failure");
+});
+
+_______________________________________________________________________________
+
+The syntax of a then call is as follows:
+promise.then(result => successFunction, error => failureFunction);
+
+__________________________________________________________________________
+
+This is where the asynchronous nature of promises come in. The .then runs after the promise is resolved (ie. changes from “pending” to “fulfilled”/ “rejected”). The first argument runs when the promise is successful while the second argument runs when the promise fails, but both will receive the result whether it is a success and provides a value or a failure and provides an error.
+
+____________________________________________________________________________________
+This is where the callback queue really shines. All of the .then handlers are enqueued into the callback queue which essentially allows all of the code of the promise to be read straight through, but not necessarily executed. The Javascript engine only looks at the callback queue when the call stack is empty, as we have learned. Thus, this allows code written after the .then handlers of the promise to execute first, even if the promise is resolved right away. The .then handlers are then executed once all of the main function calls are complete. Take this example:
+
+_______________________________________________________________________________
+let promise = new Promise((resolve, reject) => {
+  console.log("Hello");
+  resolve("Promise complete");
+});
+promise.then(result => console.log(result));
+console.log("Bye");
+// Output
+Hello
+Bye
+Promise complete
+
+____________________________________________________________________________________
+
+The Javascript engine reads through the promise all the way through followed by the remainder of the code. During this process of executing promise.then(result => console.log(result)), it executes the promise object and it pushes console.log("Hello") onto the call stack, which runs and gets popped off. It then resolves the promise with the result equal to "Promise complete". However, it reads that a .then follows the promise resolution and places that on the callback queue. It then pushes the console.log("Bye") command onto the call stack where it is executed and then popped. Finally, since the call stack is now empty, it pushes the console.log(result) onto the call stack and prints "Promise complete" which uses the result from the executor code.
+
+____________________________________________________________________________________
+
+
+
+
+
