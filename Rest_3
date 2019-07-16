@@ -1,0 +1,40 @@
+Install nodemon if you dont want to save stop again and again
+
+_________________________________________________________________
+
+Install Morgan if you want to log
+
+___________________________________________________________________
+app.js-
+
+var express = require('express');
+const morgan = require('morgan');//used for loggin
+
+var app = express;
+const productRoutes = require("./api/routes/products");
+const orderRoutes = require("./api/routes/orders");
+
+//handling the request here
+var app = app();
+app.use(morgan('dev'));//use it here
+app.use('/products',productRoutes);
+app.use('/orders',orderRoutes);
+
+app.use((res,req,next)=>{
+    var error = new Error("Not Found error");
+    error.status = 404;
+    next(error);
+
+});
+
+
+app.use((error,req,res,next)=>{
+    res.status(error.status);
+    res.json({
+       error:{
+           message:error.message
+       }
+    });
+});
+
+module.exports = app;
