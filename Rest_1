@@ -1,0 +1,33 @@
+App.js-
+__________________________________________________
+
+var express = require('express');
+
+var app = express;
+
+var app = app();
+app.use((req,res,next)=>//creating a middleware
+{
+   res.status(200).json({
+       message:"Hello Gaurav"
+   });
+}
+);
+
+module.exports = app;
+
+___________________________________________
+
+server.js-
+
+var http = require('http');
+
+var app = require('./app');
+
+const port =process.env.PORT || 3000;
+
+const server = http.createServer(app);
+
+server.listen(port);
+
+__________________________________________________
