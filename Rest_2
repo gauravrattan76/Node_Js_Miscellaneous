@@ -1,0 +1,106 @@
+orders.js-
+
+var express =  require('express');
+var router = express.Router();
+
+router.get('/',(req,res,next)=>{
+    res.status(200).json({
+        message:"we are handling the Get request here for orders"
+    })
+});
+
+router.get('/:orderId',(req,res,next)=>{
+    res.status(200).json({
+        message:"we are handling the Get request here for orders",
+        Id:req.params.orderId
+    })
+});
+
+router.post('/',(req,res,next)=>{
+    res.status(200).json({
+        message:"we are handling the Post request here"
+    })
+});
+
+module.exports = router;
+
+___________________________________________________
+
+proudcts.js-
+
+var express =  require('express');
+var router = express.Router();
+
+router.get('/',(req,res,next)=>{
+    res.status(200).json({
+        message:"we are handling the Get request here"
+    })
+});
+
+router.get('/:productId',(req,res,next)=>{
+    var id = req.params.productId;
+    if(id ==='special')
+    {
+        res.status(200).json({
+            message:"you have discovered the specail Id",
+            Id:id
+        });
+    }
+    else{
+        res.status(200).json({
+            message:"Not so special Id"
+    });
+}
+});
+
+router.patch('/:productId',(req,res,next)=>{
+    res.status(200).json({
+        message:"we are handling the Patch request here"
+    })
+});
+
+router.delete('/:productId',(req,res,next)=>{
+    res.status(200).json({
+        message:"we are handling the Patch request here"
+    })
+});
+
+router.post('/',(req,res,next)=>{
+    res.status(200).json({
+        message:"we are handling the Post request here"
+    })
+});
+
+module.exports = router;
+
+
+_________________________________________________________
+app.js-
+
+var express = require('express');
+
+var app = express;
+const productRoutes = require("./api/routes/products");
+const orderRoutes = require("./api/routes/orders");
+
+var app = app();
+app.use('/products',productRoutes);
+app.use('/orders',orderRoutes);
+
+module.exports = app;
+
+___________________________________________________________
+
+server.js-
+
+var http = require('http');
+
+var app = require('./app');
+
+const port =process.env.PORT || 3000;
+
+const server = http.createServer(app);
+
+server.listen(port);
+
+__________________________________________________________
