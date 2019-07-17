@@ -1,0 +1,119 @@
+
+//Load express module with `require` directive
+var express = require('express')
+var app = express()
+
+//Define request response in root URL (/)
+app.get('/', function (req, res) {
+  res.send('Hello World')
+})
+
+//Launch listening server on port 8080
+app.listen(8080, function () {
+  console.log('App listening on port 8080!')
+})
+Run the app
+The application is ready to launch:
+
+$ node app.js
+Go to http://localhost:8080/ in your browser to view it.
+
+
+_____________________________________________________
+
+npm install mocha chai --save-dev
+Add a test file
+Time to define our first test. We shall keep all testing files in a separate /test directory (orndung muss sein):
+
+mkdir test
+Now, add the first testing file:
+
+touch test/test-pages.js
+The test will verify the content of the websit. For that, we need an HTTP client: https://www.npmjs.com/package/request
+
+npm install request --save-dev
+The file should look like this now:
+
+var expect  = require('chai').expect;
+var request = require('request');
+
+it('Main page content', function(done) {
+    request('http://localhost:8080' , function(error, response, body) {
+        expect(body).to.equal('Hello World');
+        done();
+    });
+});
+Run the file to trigger the tests:
+
+npm test
+Test results
+Test results
+Let’s add some more tests that will check the status of the homepage and /about page:
+
+var expect  = require('chai').expect;
+var request = require('request');
+
+it('Main page content', function(done) {
+    request('http://localhost:8080' , function(error, response, body) {
+        expect(body).to.equal('Hello World');
+        done();
+    });
+});
+
+it('Main page status', function(done) {
+    request('http://localhost:8080' , function(error, response, body) {
+        expect(response.statusCode).to.equal(200);
+        done();
+    });
+});
+
+it('About page content', function(done) {
+    request('http://localhost:8080/about' , function(error, response, body) {
+        expect(response.statusCode).to.equal(404);
+        done();
+    });
+});
+Run npm test again and see the results. The /about page is not ready yet so the result will be 404:
+
+Expanded tests results
+Expanded tests results
+Grouping tests
+A very useful feature in Mocha is describe(), a function that allows you to better control your tests by grouping them:
+
+var expect  = require('chai').expect;
+var request = require('request');
+
+describe('Status and content', function() {
+    describe ('Main page', function() {
+        it('status', function(done){
+            request('http://localhost:8080/', function(error, response, body) {
+                expect(response.statusCode).to.equal(200);
+                done();
+            });
+        });
+
+        it('content', function(done) {
+            request('http://localhost:8080/' , function(error, response, body) {
+                expect(body).to.equal('Hello World');
+                done();
+            });
+        });
+    });
+
+    describe ('About page', function() {
+        it('status', function(done){
+            request('http://localhost:8080/about', function(error, response, body) {
+                expect(response.statusCode).to.equal(404);
+                done();
+            });
+        });
+
+    });
+});
+Run npm test yet again to see how the results are different:
+
+Test results with `describe()`
+Test results with `describe()`
+Test your code for errors on every push to Git
+Automating Mocha and Chai tests
+
