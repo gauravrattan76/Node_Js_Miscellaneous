@@ -1,0 +1,7 @@
+package-lock.json is automatically generated for any operations where npm modifies either the node_modules tree, or package.json. It describes the exact tree that was generated, such that subsequent installs are able to generate identical trees, regardless of intermediate dependency updates.
+
+
+
+package-lock.json: records the exact version of each installed package which allows you to re-install them. Future installs will be able to build an identical dependency tree.
+
+package.json: records the minimum version you app needs. If you update the versions of a particular package, the change is not going to be reflected here.
