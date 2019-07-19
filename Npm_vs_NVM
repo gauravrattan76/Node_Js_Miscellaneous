@@ -1,0 +1,14 @@
+nvm (Node Version Manager) is a tool that allows you to download and install Node.js. Check if you have it installed via nvm --version.
+
+curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.26.1/install.sh | bash
+npm (Node Package Manager) is a tool that allows you to install javascript packages. Check if you have it installed via npm --version.
+
+npm comes with Node.js so if you have node installed (node --version) you most likely have npm installed as well.
+
+You don't need nvm unless you you want to keep multiple versions of Node.js installed on your system or if you'd like to upgrade your current version.
+
+_______________________________________
+
+nvm as you said is an "active" nodejs version manager. You can have multiple versions of node on the same machine and switch by doing "nvm use version". npm respects nvm if it is present on the machine, meaning if you have 0.12.7 active and do npm install -g uuid, it will install it globally under 0.12.7 but if you switch to 4.0.0, uuid will no longer be globally available.
+
+In any case you do not necessarily need nvm to install packages.
